@@ -6,4 +6,6 @@ void showByDay(const Group& g);
 void showBalances(const Group& g);
 void settleUp(const Group& g);
 
+void showCategoryTotals(const Group& g);
+
 #endif
