@@ -28,8 +28,9 @@ int main() {
              << "6. Settle up (who pays whom)\n"
              << "7. Save to file\n"
              << "8. Load from file\n"
+             << "9. Category totals\n"
              << "0. Exit\n";
-        choice = readInt("Choose: ", 0, 8);
+        choice = readInt("Choose: ", 0, 9);
         switch (choice) {
             case 1: addExpense(g); break;
             case 2: listExpenses(g); break;
@@ -49,6 +50,13 @@ int main() {
                 else cout << "Could not load " << filename << ".\n";
                 break;
             }
+            
+            case 9: {
+                showCategoryTotals(g);
+                break;
+            }
+
+            
         }
     } while (choice != 0);
     cout << "Bye!\n";
