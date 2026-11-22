@@ -3,11 +3,20 @@
 #include <string>
 #include <vector>
 
+enum Category {
+    FOOD,
+    TRANSPORT,
+    ACCOMMODATION,
+    ENTERTAINMENT,
+    OTHER
+};
+
 struct Expense {
     int day;
     std::string description;
     int payer;
     int amount;
+    Category category;
     std::vector<int> sharedBy;
 };
 
