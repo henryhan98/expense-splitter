@@ -4,6 +4,17 @@
 #include "input.h"
 using namespace std;
 
+static string categoryName(Category c) {
+    switch (c) {
+        case FOOD: return "Food";
+        case TRANSPORT: return "Transport";
+        case ACCOMMODATION: return "Accommodation";
+        case ENTERTAINMENT: return "Entertainment";
+        default: return "Other";
+    }
+}
+
+
 void setupPeople(Group& g) {
     g.people.clear();
     g.expenses.clear();
@@ -89,7 +100,7 @@ void listExpenses(const Group& g) {
     int total = 0;
     for (int i = 0; i < (int)g.expenses.size(); i++) {
         const Expense& e = g.expenses[i];
-        cout << "#" << i + 1 << "  Day " << e.day << "  " << e.description << "  - "
+        cout << "#" << i + 1 << "  Day " << e.day <<"  [" << categoryName(e.category) << "] "<< "  " << e.description << "  - "
              << g.people[e.payer] << " paid " << money(e.amount) << "  (shared by: ";
         if (e.sharedBy.size() == g.people.size()) {
             cout << "everyone";
