@@ -92,3 +92,21 @@ void settleUp(const Group& g) {
     }
     if (!anyPayments) cout << "Everyone is square.\n";
 }
+
+
+void showCategoryTotals(const Group& g) {
+    int totals[5] = {0};
+
+    
+    for (const Expense& e : g.expenses) {
+        totals[e.category] += e.amount;
+    }
+
+    cout << "\n=== Category Totals ===\n";
+    cout << "Food: " << money(totals[FOOD]) << "\n";
+    
+    cout << "Transport: " << money(totals[TRANSPORT]) << "\n";
+    cout << "Accommodation: " << money(totals[ACCOMMODATION]) << "\n";
+    cout << "Entertainment: " << money(totals[ENTERTAINMENT]) << "\n";
+    cout << "Other: " << money(totals[OTHER]) << "\n";
+}
