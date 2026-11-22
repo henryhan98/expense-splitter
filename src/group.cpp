@@ -59,6 +59,18 @@ void addExpense(Group& g) {
     e.payer = readInt("Who paid? (enter their number): ", 1, g.people.size()) - 1;
     e.amount = readAmount("Amount: ");
 
+
+    cout << "\nSelect category:\n";
+    cout << "1. Food\n";
+    cout << "2. Transport\n";
+    cout << "3. Accommodation\n";
+    cout << "4. Entertainment\n";
+    cout << "5. Other\n";
+    
+    int categoryChoice = readInt("Category: ", 1, 5);
+    
+    e.category = static_cast<Category>(categoryChoice - 1);
+
     if (readYesNo("Split between everyone?")) {
         for (int i = 0; i < (int)g.people.size(); i++) e.sharedBy.push_back(i);
     } else {
