@@ -1,4 +1,5 @@
 #include "group.h"
+#include "operations.h"
 #include <iostream>
 #include <sstream>
 #include "input.h"
@@ -88,7 +89,7 @@ void addExpense(Group& g) {
         e.sharedBy = readPeopleList(g);
     }
 
-    g.expenses.push_back(e);
+    if (!appendExpense(g, e)) { cout << "Invalid expense.\n"; return; }
     cout << "Expense added.\n";
 }
 
@@ -124,6 +125,93 @@ void removeExpense(Group& g) {
     listExpenses(g);
     int number = readInt("Which expense to remove? (0 = cancel): ", 0, g.expenses.size());
     if (number == 0) return;
-    g.expenses.erase(g.expenses.begin() + (number - 1));
+    eraseExpense(g, number - 1);
     cout << "Expense #" << number << " removed.\n";
+}
+
+void editExpense(Group& g) {
+    if (g.expenses.empty()) {
+        cout << "No expenses to edit.\n";
+        return;
+    }
+    listExpenses(g);
+    int number = readInt("Which expense to edit? (0 = cancel): ", 0, g.expenses.size());
+    if (number == 0) return;
+
+    cout << "1. Amount\n"
+         << "2. Description\n"
+         << "3. Payer\n"
+         << "0. Cancel\n";
+    int field = readInt("What would you like to change? ", 0, 3);
+    if (field == 0) return;
+
+    Expense& e = g.expenses[number - 1];
+    Expense proposed = e;
+    switch (field) {
+        case 1:
+            proposed.amount = readAmount("New amount: ");
+            cout << "Amount: " << money(e.amount) << " -> " << money(proposed.amount) << "\n";
+            break;
+        case 2:
+            proposed.description = readText("New description: ");
+            if (proposed.description == "") proposed.description = "(no description)";
+            cout << "Description: " << e.description << " -> " << proposed.description << "\n";
+            break;
+        case 3:
+            printPeople(g);
+            proposed.payer = readInt("Who paid? (enter their number): ", 1, g.people.size()) - 1;
+            cout << "Payer: " << g.people[e.payer] << " -> " << g.people[proposed.payer] << "\n";
+            break;
+    }
+    if (!readYesNo("Save this change?")) {
+        cout << "Edit cancelled.\n";
+        return;
+    }
+    if (!replaceExpense(g, number - 1, proposed)) { cout << "Invalid expense.\n"; return; }
+    cout << "Expense #" << number << " updated.\n";
+}
+
+void searchExpenses(const Group& g) {
+    if (g.expenses.empty()) {
+        cout << "No expenses to search.\n";
+        return;
+    }
+    cout << "Search by:\n"
+         << "1. Description\n"
+         << "2. Payer\n"
+         << "3. Day\n"
+         << "0. Cancel\n";
+    int field = readInt("Choose: ", 0, 3);
+    if (field == 0) return;
+
+    string query;
+    int payer = -1;
+    int day = 0;
+    if (field == 1) {
+        query = readText("Description contains (blank = cancel): ");
+        if (query.empty()) return;
+    } else if (field == 2) {
+        printPeople(g);
+        int number = readInt("Payer number (0 = cancel): ", 0, g.people.size());
+        if (number == 0) return;
+        payer = number - 1;
+    } else {
+        day = readInt("Day number (0 = cancel): ", 0, 365);
+        if (day == 0) return;
+    }
+
+    int matches = 0;
+    for (int i = 0; i < (int)g.expenses.size(); i++) {
+        const Expense& e = g.expenses[i];
+        ExpenseFilter filter = field == 1 ? ExpenseFilter::Description
+                             : field == 2 ? ExpenseFilter::Payer : ExpenseFilter::Day;
+        bool match = matchesExpense(g, e, filter, query, field == 2 ? payer : day);
+        if (match) {
+            cout << "#" << i + 1 << "  Day " << e.day << "  " << e.description
+                 << "  - " << g.people[e.payer] << " paid " << money(e.amount) << "\n";
+            matches++;
+        }
+    }
+    if (matches == 0) cout << "No matching expenses.\n";
+    else cout << "Matching expenses: " << matches << "\n";
 }

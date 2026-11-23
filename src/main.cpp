@@ -31,9 +31,14 @@ int main() {
              << "9. Category totals\n"
              << "10. Category analytics\n"
              << "11. Category ranking\n"
+             << "12. Edit expense\n"
+             << "13. Search expenses\n"
              << "0. Exit\n";
-        choice = readInt("Choose: ", 0, 11);
+        choice = readInt("Choose: ", 0, 13);
         switch (choice) {
+            case 0: break;
+            case 12: editExpense(g); break;
+            case 13: searchExpenses(g); break;
             case 1: addExpense(g); break;
             case 2: listExpenses(g); break;
             case 3: removeExpense(g); break;
@@ -68,6 +73,9 @@ int main() {
             }
 
             
+            default:
+                cout << "That menu option is not available yet.\n";
+                break;
         }
     } while (choice != 0);
     cout << "Bye!\n";
