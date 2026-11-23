@@ -202,13 +202,20 @@ void showCategoryRanking(const Group& g) {
          });
 
     cout << "\n=== Category Ranking ===\n\n";
+    int rank = 1;
+    
+    for (const auto& category : categories) {
 
-    for (int i = 0; i < (int)categories.size(); i++) {
-        cout << i + 1 << ". "
-             << categories[i].name
+        
+        if (category.amount == 0)
+            continue;
+    
+        cout << rank++ << ". "
+             << category.name
              << " - "
-             << money(categories[i].amount)
+             << money(category.amount)
              << "\n";
+        }
     }
     
 }
