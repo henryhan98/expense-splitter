@@ -8,5 +8,6 @@ void settleUp(const Group& g);
 
 void showCategoryTotals(const Group& g);
 void showCategoryAnalytics(const Group& g);
+void showCategoryRanking(const Group& g);
 
 #endif
