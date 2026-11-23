@@ -30,8 +30,9 @@ int main() {
              << "8. Load from file\n"
              << "9. Category totals\n"
              << "10. Category analytics\n"
+             << "11. Category ranking\n"
              << "0. Exit\n";
-        choice = readInt("Choose: ", 0, 10);
+        choice = readInt("Choose: ", 0, 11);
         switch (choice) {
             case 1: addExpense(g); break;
             case 2: listExpenses(g); break;
@@ -57,9 +58,14 @@ int main() {
                 break;
             }
 
-            case 10:
+            case 10: {
                 showCategoryAnalytics(g);
                 break;
+            }
+            case 11: {
+                showCategoryRanking(g);
+                break;
+            }
 
             
         }
