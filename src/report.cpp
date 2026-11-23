@@ -92,3 +92,130 @@ void settleUp(const Group& g) {
     }
     if (!anyPayments) cout << "Everyone is square.\n";
 }
+
+
+void showCategoryTotals(const Group& g) {
+    int totals[5] = {0};
+
+    
+    for (const Expense& e : g.expenses) {
+        totals[e.category] += e.amount;
+    }
+
+    cout << "\n=== Category Totals ===\n";
+    cout << "Food: " << money(totals[FOOD]) << "\n";
+    
+    cout << "Transport: " << money(totals[TRANSPORT]) << "\n";
+    cout << "Accommodation: " << money(totals[ACCOMMODATION]) << "\n";
+    cout << "Entertainment: " << money(totals[ENTERTAINMENT]) << "\n";
+    cout << "Other: " << money(totals[OTHER]) << "\n";
+}
+
+
+
+
+
+
+
+
+
+void showCategoryAnalytics(const Group& g)
+{
+    int totals[5] = {0};
+
+    for (const Expense& e : g.expenses) {
+        totals[e.category] += e.amount;
+    }
+
+    int grandTotal = 0;
+
+    for (int i = 0; i < 5; i++) {
+        grandTotal += totals[i];
+    }
+
+    if (grandTotal == 0) {
+        cout << "No expenses yet.\n";
+        return;
+    }
+
+    const string names[5] = {
+        "Food",
+        "Transport",
+        "Accommodation",
+        "Entertainment",
+        "Other"
+    };
+
+    cout << "\n=== Category Analytics ===\n";
+
+    
+    for (int i = 0; i < 5; i++) {
+        double percentage =
+            totals[i] * 100.0 / grandTotal;
+
+        cout << names[i]
+             << ": "
+             << money(totals[i])
+             << " ("
+             << percentage
+             << "%)\n";
+        
+    }
+
+    int largest = 0;
+    for (int i = 1; i < 5; i++) {
+        if (totals[i] > totals[largest]) {
+            largest = i;
+        }
+    }
+    cout << "\nLargest Category: "
+         << names[largest]
+         << " ("
+         << money(totals[largest])
+         << ")\n";
+}
+
+void showCategoryRanking(const Group& g) {
+    struct CategoryData {
+        string name;
+        int amount;
+    };
+    int totals[5] = {0};
+
+    for (const Expense& e : g.expenses) {
+        totals[e.category] += e.amount;
+    }
+
+    vector<CategoryData> categories = {
+        {"Food", totals[FOOD]},
+        {"Transport", totals[TRANSPORT]},
+        {"Accommodation", totals[ACCOMMODATION]},
+        {"Entertainment", totals[ENTERTAINMENT]},
+        {"Other", totals[OTHER]}
+    };
+
+    sort(categories.begin(), categories.end(),
+         [](const CategoryData& a, const CategoryData& b) {
+             if (a.amount == 0 && b.amount != 0) return false;
+             if (a.amount != 0 && b.amount == 0) return true;
+             return a.amount > b.amount;
+         });
+
+    cout << "\n=== Category Ranking ===\n\n";
+    int rank = 1;
+    
+    for (const auto& category : categories) {
+
+        
+        if (category.amount == 0)
+            continue;
+    
+        cout << rank++ << ". "
+             << category.name
+             << " - "
+             << money(category.amount)
+             << "\n";
+        
+    }
+    
+}

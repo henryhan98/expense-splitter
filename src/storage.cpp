@@ -12,7 +12,7 @@ bool saveToFile(const Group& g, const string& filename) {
     for (const Expense& e : g.expenses) {
         out << e.day << "\n";
         out << e.description << "\n";
-        out << e.payer << " " << e.amount << " " << e.sharedBy.size();
+        out << e.payer << " " << e.amount << " "<< (int)e.category << " "<< e.sharedBy.size();
         for (int p : e.sharedBy) out << " " << p;
         out << "\n";
     }
@@ -40,7 +40,14 @@ bool loadFromFile(Group& g, const string& filename) {
         in.ignore(1000, '\n');
         if (!getline(in, e.description)) return false;
         e.description = trimLine(e.description);
-        if (!(in >> e.payer >> e.amount >> count)) return false;
+        int categoryValue;
+        
+        if (!(in >> e.payer >> e.amount >> categoryValue >> count)) return false;
+
+        
+        e.category = static_cast<Category>(categoryValue);
+
+        if (categoryValue < 0 || categoryValue > 4) return false;
         if (e.payer < 0 || e.payer >= numPeople || e.amount <= 0) return false;
         if (count < 1 || count > numPeople) return false;
         for (int k = 0; k < count; k++) {
