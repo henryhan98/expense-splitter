@@ -175,13 +175,11 @@ void showCategoryAnalytics(const Group& g)
          << ")\n";
 }
 
-
 void showCategoryRanking(const Group& g) {
     struct CategoryData {
         string name;
         int amount;
     };
-
     int totals[5] = {0};
 
     for (const Expense& e : g.expenses) {
@@ -198,6 +196,8 @@ void showCategoryRanking(const Group& g) {
 
     sort(categories.begin(), categories.end(),
          [](const CategoryData& a, const CategoryData& b) {
+             if (a.amount == 0 && b.amount != 0) return false;
+             if (a.amount != 0 && b.amount == 0) return true;
              return a.amount > b.amount;
          });
 
@@ -210,4 +210,5 @@ void showCategoryRanking(const Group& g) {
              << money(categories[i].amount)
              << "\n";
     }
+    
 }
