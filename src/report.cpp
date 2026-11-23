@@ -215,7 +215,7 @@ void showCategoryRanking(const Group& g) {
              << " - "
              << money(category.amount)
              << "\n";
-        }
+        
     }
     
 }
