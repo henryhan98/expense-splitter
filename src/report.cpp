@@ -110,3 +110,67 @@ void showCategoryTotals(const Group& g) {
     cout << "Entertainment: " << money(totals[ENTERTAINMENT]) << "\n";
     cout << "Other: " << money(totals[OTHER]) << "\n";
 }
+
+
+
+
+
+
+
+
+
+void showCategoryAnalytics(const Group& g)
+{
+    int totals[5] = {0};
+
+    for (const Expense& e : g.expenses) {
+        totals[e.category] += e.amount;
+    }
+
+    int grandTotal = 0;
+
+    for (int i = 0; i < 5; i++) {
+        grandTotal += totals[i];
+    }
+
+    if (grandTotal == 0) {
+        cout << "No expenses yet.\n";
+        return;
+    }
+
+    const string names[5] = {
+        "Food",
+        "Transport",
+        "Accommodation",
+        "Entertainment",
+        "Other"
+    };
+
+    cout << "\n=== Category Analytics ===\n";
+
+    
+    for (int i = 0; i < 5; i++) {
+        double percentage =
+            totals[i] * 100.0 / grandTotal;
+
+        cout << names[i]
+             << ": "
+             << money(totals[i])
+             << " ("
+             << percentage
+             << "%)\n";
+        
+    }
+
+    int largest = 0;
+    for (int i = 1; i < 5; i++) {
+        if (totals[i] > totals[largest]) {
+            largest = i;
+        }
+    }
+    cout << "\nLargest Category: "
+         << names[largest]
+         << " ("
+         << money(totals[largest])
+         << ")\n";
+}
