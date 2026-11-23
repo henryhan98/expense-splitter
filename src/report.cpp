@@ -174,3 +174,40 @@ void showCategoryAnalytics(const Group& g)
          << money(totals[largest])
          << ")\n";
 }
+
+
+void showCategoryRanking(const Group& g) {
+    struct CategoryData {
+        string name;
+        int amount;
+    };
+
+    int totals[5] = {0};
+
+    for (const Expense& e : g.expenses) {
+        totals[e.category] += e.amount;
+    }
+
+    vector<CategoryData> categories = {
+        {"Food", totals[FOOD]},
+        {"Transport", totals[TRANSPORT]},
+        {"Accommodation", totals[ACCOMMODATION]},
+        {"Entertainment", totals[ENTERTAINMENT]},
+        {"Other", totals[OTHER]}
+    };
+
+    sort(categories.begin(), categories.end(),
+         [](const CategoryData& a, const CategoryData& b) {
+             return a.amount > b.amount;
+         });
+
+    cout << "\n=== Category Ranking ===\n\n";
+
+    for (int i = 0; i < (int)categories.size(); i++) {
+        cout << i + 1 << ". "
+             << categories[i].name
+             << " - "
+             << money(categories[i].amount)
+             << "\n";
+    }
+}
