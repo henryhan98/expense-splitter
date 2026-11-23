@@ -29,8 +29,9 @@ int main() {
              << "7. Save to file\n"
              << "8. Load from file\n"
              << "9. Category totals\n"
+             << "10. Category analytics\n"
              << "0. Exit\n";
-        choice = readInt("Choose: ", 0, 9);
+        choice = readInt("Choose: ", 0, 10);
         switch (choice) {
             case 1: addExpense(g); break;
             case 2: listExpenses(g); break;
@@ -55,6 +56,10 @@ int main() {
                 showCategoryTotals(g);
                 break;
             }
+
+            case 10:
+                showCategoryAnalytics(g);
+                break;
 
             
         }
