@@ -120,7 +120,8 @@ void addExpense(Group& g) {
     } else {
         applyCustomWeights(g, e);
     }
-
+    cout << "\nExpense added.\n";
+    reportAfterExpense(g);
     if (!appendExpense(g, e)) { cout << "Invalid expense.\n"; return; }
     cout << "Split: ";
     for (size_t k = 0; k < e.sharedBy.size(); k++) {
@@ -168,6 +169,7 @@ void removeExpense(Group& g) {
     cout << "Expense #" << number << " removed.\n";
 
     showBudgetLine(g);
+}
 }
 
 
