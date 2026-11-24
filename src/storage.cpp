@@ -41,6 +41,16 @@ bool saveToFile(const Group& g, const string& filename) {
 static bool parseGroup(const string& data, bool categories, Group& result) {
     istringstream in(data);
     Group temp;
+
+    string tag;
+    if (!(in >> tag)) return false;
+    bool v2 = (tag == "v2");
+
+    int numPeople = v2 ? 0 : atoi(tag.c_str());
+    if (v2 && !(in >> numPeople)) return false;
+    if (numPeople < 1) return false;
+    in.ignore(1000, '\n');
+    for (int i = 0; i < numPeople; i++) {
     int count;
     if (!(in >> count) || count < 1 || count > 50) return false;
     in.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -49,6 +59,24 @@ static bool parseGroup(const string& data, bool categories, Group& result) {
         if (!getline(in, name)) return false;
         temp.people.push_back(trimLine(name));
     }
+
+    if (v2) {
+        int hasFixed = 0;
+        if (!(in >> hasFixed)) return false;
+        if (hasFixed) {
+            temp.fixedWeight.assign(numPeople, 0);
+            for (int i = 0; i < numPeople; i++) {
+                if (!(in >> temp.fixedWeight[i])) return false;
+            }
+        }
+        if (!(in >> temp.budget)) return false;
+    }
+
+    int numExpenses;
+    if (!(in >> numExpenses) || numExpenses < 0) return false;
+    for (int i = 0; i < numExpenses; i++) {
+        Expense e;
+        int count;
     int expenses;
     if (!(in >> expenses) || expenses < 0) return false;
     in.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -72,6 +100,18 @@ static bool parseGroup(const string& data, bool categories, Group& result) {
             if (!(fields >> person)) return false;
             e.sharedBy.push_back(person);
         }
+        if (v2) {
+            int weightCount = 0;
+            if (!(in >> weightCount)) return false;
+            for (int k = 0; k < weightCount; k++) {
+                int w;
+                if (!(in >> w) || w < 0) return false;
+                e.weights.push_back(w);
+            }
+            if (weightCount != count) e.weights.clear();
+        }
+
+        temp.expenses.push_back(e);
         string extra;
         if (fields >> extra) return false;
         if (!appendExpense(temp, e)) return false;
