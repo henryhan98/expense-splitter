@@ -7,5 +7,7 @@ void printPeople(const Group& g);
 void addExpense(Group& g);
 void listExpenses(const Group& g);
 void removeExpense(Group& g);
+void editExpense(Group& g);
+void searchExpenses(const Group& g);
 
 #endif
