@@ -22,10 +22,6 @@ bool saveToFile(const Group& g, const string& filename) {
     }
     out << g.budget << "\n" << g.expenses.size() << "\n";
 
-    out << g.people.size() << "\n";
-    for (const string& name : g.people) out << name << "\n";
-    out << g.expenses.size() << "\n";
-
     for (const Expense& e : g.expenses) {
         out << e.day << "\n";
         out << e.description << "\n";
