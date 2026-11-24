@@ -37,8 +37,8 @@ int main() {
              << "11. Category ranking\n"
              << "12. Edit expense\n"
              << "13. Search expenses\n"
-             << "14. Set fixed percentages\n";
-             << "15. Adjust budget\n";
+             << "14. Set fixed percentages\n"
+             << "15. Adjust budget\n"
              << "0. Exit\n";
         choice = readInt("Choose: ", 0, 15);
         switch (choice) {
@@ -79,7 +79,6 @@ int main() {
             case 13: searchExpenses(g); break;
             case 14: setFixedPercent(g); break;
             case 15: adjustBudget(g); break;
-            
 
             
             default:

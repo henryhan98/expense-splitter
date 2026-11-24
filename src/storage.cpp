@@ -13,8 +13,7 @@ bool saveToFile(const Group& g, const string& filename) {
     ofstream out(filename);
     if (!out) return false;
     
-    out << "v2\n" << g.people.size() << "\n";
-    out << "EXPENSE_SPLITTER_V2\n" << g.people.size() << "\n";
+    out << "EXPENSE_SPLITTER_V3\n" << g.people.size() << "\n";
     for (const string& name : g.people) out << name << "\n";
     bool fixed = hasFixedPercent(g);
     out << (fixed ? "1" : "0") << "\n";
@@ -123,18 +122,78 @@ static bool parseGroup(const string& data, bool categories, Group& result) {
     return true;
 }
 
+static bool parseOwn(const string& data, bool withCategory, Group& result) {
+    istringstream in(data);
+    Group temp;
+    int count;
+    if (!(in >> count) || count < 1 || count > 50) return false;
+    in.ignore(numeric_limits<streamsize>::max(), '\n');
+    for (int i = 0; i < count; ++i) {
+        string name;
+        if (!getline(in, name)) return false;
+        temp.people.push_back(trimLine(name));
+    }
+    int hasFixed = 0;
+    if (!(in >> hasFixed)) return false;
+    if (hasFixed) {
+        temp.fixedWeight.assign(count, 0);
+        for (int& w : temp.fixedWeight) {
+            if (!(in >> w)) return false;
+        }
+    }
+    if (!(in >> temp.budget)) return false;
+    int expenses;
+    if (!(in >> expenses) || expenses < 0) return false;
+    for (int i = 0; i < expenses; ++i) {
+        Expense e = {};
+        int shared = 0, weightCount = 0, category = OTHER;
+        if (!(in >> e.day)) return false;
+        in.ignore(numeric_limits<streamsize>::max(), '\n');
+        if (!getline(in, e.description)) return false;
+        e.description = trimLine(e.description);
+        if (!(in >> e.payer >> e.amount)) return false;
+        if (withCategory && !(in >> category)) return false;
+        if (category < FOOD || category > OTHER) return false;
+        e.category = static_cast<Category>(category);
+        if (!(in >> shared) || shared < 1 || shared > count) return false;
+        for (int k = 0; k < shared; k++) {
+            int p;
+            if (!(in >> p)) return false;
+            e.sharedBy.push_back(p);
+        }
+        if (!(in >> weightCount) || weightCount < 0 || weightCount > shared) return false;
+        for (int k = 0; k < weightCount; k++) {
+            int w;
+            if (!(in >> w)) return false;
+            e.weights.push_back(w);
+        }
+        if (weightCount != shared) e.weights.clear();
+        if (!appendExpense(temp, e)) return false;
+    }
+    in >> ws;
+    if (!in.eof()) return false;
+    result = temp;
+    return true;
+}
+
 bool loadFromFile(Group& g, const string& filename) {
     ifstream in(filename);
     if (!in) return false;
     string first;
     if (!getline(in, first)) return false;
-    ostringstream contents;
-    contents << in.rdbuf();
+    ostringstream rest;
+    rest << in.rdbuf();
+    string tail = rest.str();
+    string head = trimLine(first);
     Group parsed;
-    if (trimLine(first) == "EXPENSE_SPLITTER_V2") {
-        if (!parseGroup(contents.str(), true, parsed)) return false;
+    if (head == "EXPENSE_SPLITTER_V3") {
+        if (!parseOwn(tail, true, parsed)) return false;
+    } else if (head == "v2") {
+        if (!parseOwn(tail, false, parsed)) return false;
+    } else if (head == "EXPENSE_SPLITTER_V2") {
+        if (!parseGroup(tail, true, parsed)) return false;
     } else {
-        string data = first + "\n" + contents.str();
+        string data = first + "\n" + tail;
         Group legacy;
         bool categoryOk = parseGroup(data, true, parsed);
         bool legacyOk = parseGroup(data, false, legacy);

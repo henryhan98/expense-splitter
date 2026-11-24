@@ -101,21 +101,34 @@ void addExpense(Group& g) {
     e.category = static_cast<Category>(categoryChoice - 1);
 
     bool useFixed = hasFixedPercent(g);
-    cout << "How to split?  1. fixed %  2. even  3. custom %\n";
+    cout << "How to split?  1. fixed %  (" << (useFixed ? "available" : "none set")
+         << ") 2. even  3. custom %\n";
     int mode = readInt("Choose: ", 1, 3);
+    if (mode == 1 && !useFixed) {
+        cout << "No fixed percentages set - Using even split.\n";
+        mode = 2;
+    }
     if (mode == 1) {
       applyFixedWeights(g, e);
-    } else if (mode == 2) { ... }
-  
-    g.expenses.push_back(e);
+    } else if (mode == 2) {
+        if (readYesNo("Split between everyone?")) {
+            e.sharedBy.clear();
+            for (int i = 0; i < (int)g.people.size(); i++) e.sharedBy.push_back(i);
+        } else {
+            e.sharedBy = readPeopleList(g);
+        }
+    } else {
+        applyCustomWeights(g, e);
+    }
+    cout << "\nExpense added.\n";
+    reportAfterExpense(g);
+    if (!appendExpense(g, e)) { cout << "Invalid expense.\n"; return; }
     cout << "Split: ";
     for (size_t k = 0; k < e.sharedBy.size(); k++) {
         cout << (k ? ", " : "") << g.people[e.sharedBy[k]] << " " << money(shareOf(e, e.sharedBy[k]));
     }
     cout << "\nExpense added.\n";
     reportAfterExpense(g);
-    if (!appendExpense(g, e)) { cout << "Invalid expense.\n"; return; }
-    cout << "Expense added.\n";
 }
 
 void listExpenses(const Group& g) {
@@ -158,6 +171,7 @@ void removeExpense(Group& g) {
     showBudgetLine(g);
 }
 }
+
 
 void editExpense(Group& g) {
     if (g.expenses.empty()) {
