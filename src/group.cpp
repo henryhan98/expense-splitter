@@ -2,11 +2,18 @@
 #include <iostream>
 #include <sstream>
 #include "input.h"
+#include <string>
+#include <vector>
+#include "budget.h"
+#include "percentage.h"
 using namespace std;
 
 void setupPeople(Group& g) {
     g.people.clear();
     g.expenses.clear();
+
+    g.fixedWeight.clear();
+    g.budget = -1;
 
     int count = readInt("How many people are in the group? ", 1, 50);
     for (int i = 0; i < count; i++) {
@@ -14,7 +21,18 @@ void setupPeople(Group& g) {
         if (name == "") name = "Person " + to_string(i + 1);
         g.people.push_back(name);
     }
+
+    if (readYesNo("Set a budget now?")) {
+        g.budget = readAmount("Budget total: ");
+        showBudgetLine(g);
+    }
+    if (readYesNo("Set initial percentage split now?")) {
+        g.fixedWeight = askPercentages(g);
+        cout << "Fixed percentages saved:\n";
+        printPercentages(g);
+    }
 }
+
 
 void printPeople(const Group& g) {
     for (int i = 0; i < (int)g.people.size(); i++) {
@@ -59,14 +77,33 @@ void addExpense(Group& g) {
     e.payer = readInt("Who paid? (enter their number): ", 1, g.people.size()) - 1;
     e.amount = readAmount("Amount: ");
 
-    if (readYesNo("Split between everyone?")) {
-        for (int i = 0; i < (int)g.people.size(); i++) e.sharedBy.push_back(i);
+    bool useFixed = hasFixedPercent(g);
+    cout << "How to split?  1. fixed %  (" << (useFixed ? "available" : "none set") << ")  2. even  3. custom %\n";
+    int mode = readInt("Choose: ", 1, 3);
+    if (mode == 1 && !useFixed) {
+        cout << "No fixed percentages - using even split.\n";
+        mode = 2;
+    }
+    if (mode == 1) {
+        applyFixedWeights(g, e);
+    } else if (mode == 2) {
+        if (readYesNo("Split with everyone?")) {
+            e.sharedBy.clear();
+            for (int i = 0; i < (int)g.people.size(); i++) e.sharedBy.push_back(i);
+        } else {
+            e.sharedBy = readPeopleList(g);
+        }
     } else {
-        e.sharedBy = readPeopleList(g);
+        applyCustomWeights(g, e);
     }
 
     g.expenses.push_back(e);
-    cout << "Expense added.\n";
+    cout << "Split: ";
+    for (size_t k = 0; k < e.sharedBy.size(); k++) {
+        cout << (k ? ", " : "") << g.people[e.sharedBy[k]] << " " << money(shareOf(e, e.sharedBy[k]));
+    }
+    cout << "\nExpense added.\n";
+    reportAfterExpense(g);
 }
 
 void listExpenses(const Group& g) {
@@ -87,10 +124,12 @@ void listExpenses(const Group& g) {
                 cout << g.people[e.sharedBy[k]];
             }
         }
+        if ((int)e.weights.size() == (int)e.sharedBy.size() && !e.weights.empty()) cout << " | %";
         cout << ")\n";
         total += e.amount;
     }
     cout << "Total spent: " << money(total) << "\n";
+    showBudgetLine(g);
 }
 
 void removeExpense(Group& g) {
@@ -103,4 +142,6 @@ void removeExpense(Group& g) {
     if (number == 0) return;
     g.expenses.erase(g.expenses.begin() + (number - 1));
     cout << "Expense #" << number << " removed.\n";
+
+    showBudgetLine(g);
 }

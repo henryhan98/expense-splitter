@@ -9,11 +9,16 @@ struct Expense {
     int payer;
     int amount;
     std::vector<int> sharedBy;
+
+    std::vector<int> weights;
 };
 
 struct Group {
     std::vector<std::string> people;
     std::vector<Expense> expenses;
+
+    std::vector<int> fixedWeight;
+    int budget = -1;
 };
 
 std::string money(int cents);
