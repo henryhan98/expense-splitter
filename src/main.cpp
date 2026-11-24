@@ -32,11 +32,17 @@ int main() {
              << "6. Settle up (who pays whom)\n"
              << "7. Save to file\n"
              << "8. Load from file\n"
-             << "9. Set fixed percentages\n"
-             << "10. Adjust budget\n"
+             << "9. Category totals\n"
+             << "10. Category analytics\n"
+             << "11. Category ranking\n"
+             << "12. Edit expense\n"
+             << "13. Search expenses\n"
+             << "14. Set fixed percentages\n"
+             << "15. Adjust budget\n"
              << "0. Exit\n";
-        choice = readInt("Choose: ", 0, 10);
+        choice = readInt("Choose: ", 0, 15);
         switch (choice) {
+            case 0: break;
             case 1: addExpense(g); break;
             case 2: listExpenses(g); break;
             case 3: removeExpense(g); break;
@@ -55,8 +61,29 @@ int main() {
                 else cout << "Could not load " << filename << ".\n";
                 break;
             }
-            case 9: setFixedPercent(g); break;
-            case 10: adjustBudget(g); break;
+            
+            case 9: {
+                showCategoryTotals(g);
+                break;
+            }
+
+            case 10: {
+                showCategoryAnalytics(g);
+                break;
+            }
+            case 11: {
+                showCategoryRanking(g);
+                break;
+            }
+            case 12: editExpense(g); break;
+            case 13: searchExpenses(g); break;
+            case 14: setFixedPercent(g); break;
+            case 15: adjustBudget(g); break;
+
+            
+            default:
+                cout << "That menu option is not available yet.\n";
+                break;
         }
     } while (choice != 0);
     cout << "Bye!\n";
