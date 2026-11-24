@@ -185,8 +185,9 @@ void editExpense(Group& g) {
     cout << "1. Amount\n"
          << "2. Description\n"
          << "3. Payer\n"
+         << "4. Category\n"
          << "0. Cancel\n";
-    int field = readInt("What would you like to change? ", 0, 3);
+    int field = readInt("What would you like to change? ", 0, 4);
     if (field == 0) return;
 
     Expense& e = g.expenses[number - 1];
@@ -205,6 +206,12 @@ void editExpense(Group& g) {
             printPeople(g);
             proposed.payer = readInt("Who paid? (enter their number): ", 1, g.people.size()) - 1;
             cout << "Payer: " << g.people[e.payer] << " -> " << g.people[proposed.payer] << "\n";
+            break;
+        case 4:
+            for (int category = FOOD; category <= OTHER; ++category)
+                cout << category + 1 << ". " << categoryName(static_cast<Category>(category)) << "\n";
+            proposed.category = static_cast<Category>(readInt("New category: ", 1, 5) - 1);
+            cout << "Category: " << categoryName(e.category) << " -> " << categoryName(proposed.category) << "\n";
             break;
     }
     if (!readYesNo("Save this change?")) {
