@@ -109,7 +109,7 @@ void selectExpense() {
     set(Description, e.description);
     set(Amount, money(e.amount));
     SendMessage(control(CategoryChoice), CB_SETCURSEL, e.category, 0);
-    EnableWindow(control(CategoryChoice), FALSE);
+    EnableWindow(control(CategoryChoice), TRUE);
     SendMessage(control(Payer), CB_SETCURSEL, e.payer, 0);
     EnableWindow(control(Day), FALSE);
     set(Apply, "Confirm edit...");
@@ -142,7 +142,8 @@ void applyExpense() {
         std::string preview = "Save changes to expense #" + std::to_string(editing + 1) + "?\n\n"
             + "Description: " + old.description + " -> " + candidate.description + "\n"
             + "Amount: " + money(old.amount) + " -> " + money(candidate.amount) + "\n"
-            + "Payer: " + group.people[old.payer] + " -> " + group.people[candidate.payer];
+            + "Payer: " + group.people[old.payer] + " -> " + group.people[candidate.payer] + "\n"
+            + "Category: " + categoryNames[old.category] + " -> " + categoryNames[candidate.category];
         if (MessageBoxA(window, preview.c_str(), "Confirm edit", MB_YESNO | MB_ICONQUESTION) != IDYES) return;
         if (!replaceExpense(group, editing, candidate)) { message("Invalid expense."); return; }
     } else {
