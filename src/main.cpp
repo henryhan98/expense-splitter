@@ -5,6 +5,8 @@
 #include "report.h"
 #include "storage.h"
 using namespace std;
+#include "budget.h"
+#include "percentage.h"
 
 int main() {
     Group g;
@@ -19,6 +21,8 @@ int main() {
     if (!loaded) setupPeople(g);
     int choice;
     do {
+        cout << "\n";
+        showBudgetLine(g);
         cout << "\n----- Menu -----\n"
              << "1. Add expense\n"
              << "2. List expenses\n"
@@ -33,12 +37,12 @@ int main() {
              << "11. Category ranking\n"
              << "12. Edit expense\n"
              << "13. Search expenses\n"
+             << "14. Set fixed percentages\n";
+             << "15. Adjust budget\n";
              << "0. Exit\n";
-        choice = readInt("Choose: ", 0, 13);
+        choice = readInt("Choose: ", 0, 15);
         switch (choice) {
             case 0: break;
-            case 12: editExpense(g); break;
-            case 13: searchExpenses(g); break;
             case 1: addExpense(g); break;
             case 2: listExpenses(g); break;
             case 3: removeExpense(g); break;
@@ -71,6 +75,11 @@ int main() {
                 showCategoryRanking(g);
                 break;
             }
+            case 12: editExpense(g); break;
+            case 13: searchExpenses(g); break;
+            case 14: setFixedPercent(g); break;
+            case 15: adjustBudget(g); break;
+            
 
             
             default:
